@@ -55,11 +55,6 @@ public class SysAuthController {
             .setRoles(roleService.getUserRoles((AuthUser) subject.getPrincipal())));
   }
 
-  @PostMapping("/info")
-  public ResponseEntity<AuthUser> info() {
-    return ResponseEntity.ok(userService.getCurrentUser());
-  }
-
   @AnonymousAccess
   @GetMapping("/code")
   public ResponseEntity<Object> getCode() {

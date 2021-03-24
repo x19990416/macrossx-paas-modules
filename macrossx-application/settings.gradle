@@ -7,6 +7,4 @@
  * in the user manual at https://docs.gradle.org/6.3/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'macrossx-paas-modules'
-include('module-common','module-jpa','module-auth','module-logging','module-menu','module-user')
-include('macrossx-application')
+rootProject.name = 'macrossx-application'

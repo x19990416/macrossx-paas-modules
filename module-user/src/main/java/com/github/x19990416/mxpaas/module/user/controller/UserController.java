@@ -15,6 +15,10 @@
  */
 package com.github.x19990416.mxpaas.module.user.controller;
 
+import com.github.x19990416.mxpaas.module.auth.domain.AuthRole;
+import com.github.x19990416.mxpaas.module.auth.domain.AuthUser;
+import com.github.x19990416.mxpaas.module.auth.service.AuthUserService;
+import com.github.x19990416.mxpaas.module.menu.service.MenuService;
 import com.github.x19990416.mxpaas.module.user.domain.dto.UserDto;
 import com.github.x19990416.mxpaas.module.user.domain.dto.UserQueryCriteria;
 import com.github.x19990416.mxpaas.module.user.domain.vo.UserInfoVo;
@@ -34,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -41,6 +46,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
   private final UserService userService;
+
+  private final AuthUserService authUserService;
+
+  private final MenuService menuService;
 
   @GetMapping("/query")
   public ResponseEntity<Object> query(UserQueryCriteria criteria, Pageable pageable) {
@@ -65,4 +74,19 @@ public class UserController {
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
+  @GetMapping("/current")
+  public ResponseEntity<Object> info(String token) {
+    AuthUser user = authUserService.getCurrentUser();
+    UserInfoVo userInfo =
+        new UserInfoVo()
+            .setAvatar(user.getAvatarName())
+            .setNickname(user.getNickName())
+            .setUsername(user.getUsername())
+            .setRoles(
+                user.getRoles().stream().map(AuthRole::getLevelName).collect(Collectors.toSet()))
+            .setMenus(
+                menuService.buildMenu(menuService.buildTree(menuService.findByUser(user.getId()))));
+    log.info("{}", userInfo);
+    return ResponseEntity.ok(userInfo);
+  }
 }

@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.x19990416.mxpaas.module.user.controller;
+package com.github.x19990416.mxpaas.application.controller;
 
 import com.github.x19990416.mxpaas.module.auth.domain.AuthRole;
 import com.github.x19990416.mxpaas.module.auth.domain.AuthUser;
@@ -31,26 +31,26 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/current")
 @Slf4j
 @RequiredArgsConstructor
 public class CurrentUserController {
-  private final AuthRoleService authRoleService;
-  private final MenuService menuService;
+	private final AuthRoleService authRoleService;
+	private final MenuService menuService;
 
-  @GetMapping("/info")
-  public ResponseEntity<Object> info(String token) {
-    AuthUser user = (AuthUser) SecurityUtils.getSubject().getPrincipal();
-    UserInfoVo userInfo =
-        new UserInfoVo()
-            .setAvatar(user.getAvatarName())
-            .setNickname(user.getNickName())
-            .setUsername(user.getUsername())
-            .setRoles(
-                user.getRoles().stream().map(AuthRole::getLevelName).collect(Collectors.toSet()))
-            .setMenus(
-                menuService.buildMenu(menuService.buildTree(menuService.findByUser(user.getId()))));
-    log.info("{}", userInfo);
-    return ResponseEntity.ok(userInfo);
-  }
+	@GetMapping("/info")
+	public ResponseEntity<Object> info(String token) {
+		AuthUser user = (AuthUser) SecurityUtils.getSubject().getPrincipal();
+		UserInfoVo userInfo =
+				new UserInfoVo()
+						.setAvatar(user.getAvatarName())
+						.setNickname(user.getNickName())
+						.setUsername(user.getUsername())
+						.setRoles(
+								user.getRoles().stream().map(AuthRole::getLevelName).collect(Collectors.toSet()))
+						.setMenus(
+								menuService.buildMenu(menuService.buildTree(menuService.findByUser(user.getId()))));
+		log.info("{}", userInfo);
+		return ResponseEntity.ok(userInfo);
+	}
 }
